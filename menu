@@ -1,0 +1,83 @@
+-- 🔴⚫ Script Menu GUI (Black & Red Theme)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Remove old GUI if it exists
+if PlayerGui:FindFirstChild("ScriptMenu") then
+    PlayerGui:FindFirstChild("ScriptMenu"):Destroy()
+end
+
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ScriptMenu"
+ScreenGui.Parent = PlayerGui
+
+-- Create Main Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 220, 0, 280)
+Frame.Position = UDim2.new(0.35, 0, 0.25, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+-- Frame Corner
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = Frame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+Title.Text = "⚡ Script Menu"
+Title.TextColor3 = Color3.fromRGB(255, 50, 50)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Frame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = Title
+
+-- Button Maker
+local function createButton(name, text, yPos, scriptFunc)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(0.9, 0, 0, 40)
+    Button.Position = UDim2.new(0.05, 0, 0, yPos)
+    Button.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 80, 80)
+    Button.TextScaled = true
+    Button.Font = Enum.Font.GothamBold
+    Button.Parent = Frame
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Button
+
+    Button.MouseButton1Click:Connect(function()
+        pcall(scriptFunc)
+        ScreenGui:Destroy()
+    end)
+end
+
+-- Buttons
+createButton("EggRefresher", "🥚 Egg Refresher", 50, function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/eggChanger/refs/heads/main/main"))()
+end)
+
+createButton("FreezeTrade", "❄️ Freeze Trade", 100, function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/FreezeTrade"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/FreezeSprinklers"))()
+end)
+
+createButton("SizeChanger", "📏 Size Changer", 150, function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/SizeChanger"))()
+end)
+
+createButton("SetMutation", "🌈 Set Mutation", 200, function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/SetMutation"))()
+end)
