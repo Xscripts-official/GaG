@@ -1,0 +1,75 @@
+-- 🌱 Grow a Garden: Set Mutation Button
+-- LocalScript in StarterGui
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 200, 0, 80)
+MainFrame.Position = UDim2.new(0.4, 0, 0.4, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+local SetButton = Instance.new("TextButton")
+SetButton.Size = UDim2.new(0.8, 0, 0.5, 0)
+SetButton.Position = UDim2.new(0.1, 0, 0.25, 0)
+SetButton.Text = "Set Mutation"
+SetButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
+SetButton.TextColor3 = Color3.new(1, 1, 1)
+SetButton.Font = Enum.Font.SourceSansBold
+SetButton.TextScaled = true
+SetButton.Parent = MainFrame
+
+-- Track if rainbow applied
+local rainbowApplied = false
+
+-- Function to rename once
+local function renameTool(tool)
+    if not string.find(tool.Name, "Rainbow") then
+        tool.Name = "Rainbow " .. tool.Name
+    end
+end
+
+-- Rainbow Effect Handler
+local function applyRainbow(tool)
+    -- Prevent double application
+    if rainbowApplied then return end
+    rainbowApplied = true
+
+    renameTool(tool)
+
+    -- Continuous rainbow color cycle
+    RunService.RenderStepped:Connect(function()
+        if tool and tool.Parent then
+            for _, part in pairs(tool:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    local hue = tick() % 5 / 5
+                    part.Color = Color3.fromHSV(hue, 1, 1)
+                end
+            end
+        end
+    end)
+end
+
+-- Button Click
+SetButton.MouseButton1Click:Connect(function()
+    local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+    if tool then
+        applyRainbow(tool)
+    else
+        warn("Equip a tool first!")
+    end
+end)
