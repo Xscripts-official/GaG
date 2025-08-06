@@ -1,4 +1,4 @@
--- 🔴⚫ Script Menu GUI (Black & Red Theme)
+-- 🔴⚫ Full-Screen Fitting Script Menu (Black & Red Theme)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -11,12 +11,13 @@ end
 -- Create ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ScriptMenu"
+ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = PlayerGui
 
--- Create Main Frame
+-- Create Main Frame (Centered, fits screen nicely)
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 220, 0, 280)
-Frame.Position = UDim2.new(0.35, 0, 0.25, 0)
+Frame.Size = UDim2.new(0.35, 0, 0.55, 0) -- 35% width, 55% height of screen
+Frame.Position = UDim2.new(0.325, 0, 0.225, 0) -- Centers it
 Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.BorderSizePixel = 0
 Frame.Active = true
@@ -25,12 +26,12 @@ Frame.Parent = ScreenGui
 
 -- Frame Corner
 local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.CornerRadius = UDim.new(0, 14)
 UICorner.Parent = Frame
 
 -- Title
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Size = UDim2.new(1, 0, 0.15, 0)
 Title.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
 Title.Text = "⚡ Script Menu"
 Title.TextColor3 = Color3.fromRGB(255, 50, 50)
@@ -39,14 +40,14 @@ Title.Font = Enum.Font.GothamBold
 Title.Parent = Frame
 
 local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.CornerRadius = UDim.new(0, 14)
 TitleCorner.Parent = Title
 
 -- Button Maker
-local function createButton(name, text, yPos, scriptFunc)
+local function createButton(name, text, order, scriptFunc)
     local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(0.9, 0, 0, 40)
-    Button.Position = UDim2.new(0.05, 0, 0, yPos)
+    Button.Size = UDim2.new(0.8, 0, 0.15, 0) -- 15% of frame height
+    Button.Position = UDim2.new(0.1, 0, 0.18 + (0.2 * (order - 1)), 0)
     Button.BackgroundColor3 = Color3.fromRGB(40, 0, 0)
     Button.Text = text
     Button.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -55,7 +56,7 @@ local function createButton(name, text, yPos, scriptFunc)
     Button.Parent = Frame
     
     local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.CornerRadius = UDim.new(0, 10)
     BtnCorner.Parent = Button
 
     Button.MouseButton1Click:Connect(function()
@@ -65,19 +66,19 @@ local function createButton(name, text, yPos, scriptFunc)
 end
 
 -- Buttons
-createButton("EggRefresher", "🥚 Egg Refresher", 50, function()
+createButton("EggRefresher", "🥚 Egg Refresher", 1, function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/eggChanger/refs/heads/main/main"))()
 end)
 
-createButton("FreezeTrade", "❄️ Freeze Trade", 100, function()
+createButton("FreezeTrade", "❄️ Freeze Trade", 2, function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/FreezeTrade"))()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/FreezeSprinklers"))()
 end)
 
-createButton("SizeChanger", "📏 Size Changer", 150, function()
+createButton("SizeChanger", "📏 Size Changer", 3, function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/SizeChanger"))()
 end)
 
-createButton("SetMutation", "🌈 Set Mutation", 200, function()
+createButton("SetMutation", "🌈 Set Mutation", 4, function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/GaG/refs/heads/main/SetMutation"))()
 end)
