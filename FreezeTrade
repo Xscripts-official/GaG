@@ -1,4 +1,4 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Xscripts-official/EggRefresher/refs/heads/main/EggRefresherLATEST"))()
+
 -- LocalScript inside StarterPlayerScripts
 
 local Players = game:GetService("Players")
