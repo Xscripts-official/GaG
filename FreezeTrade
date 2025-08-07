@@ -1,109 +1,126 @@
-
--- LocalScript inside StarterPlayerScripts
-
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
+local LocalPlayer = Players.LocalPlayer
 
--- ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = PlayerGui
+-- Create GUI
+local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+screenGui.Name = "HackerGUI"
+screenGui.ResetOnSpawn = false
 
--- Main Frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 280, 0, 200)
-mainFrame.Position = UDim2.new(0.5, -140, 0.5, -100)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-mainFrame.BorderSizePixel = 2
+-- Main Frame (half size)
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 200, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -100, 0.5, -75)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
-mainFrame.Draggable = true -- make draggable
-mainFrame.Parent = screenGui
+mainFrame.Draggable = true
 
--- Title Bar
-local title = Instance.new("TextLabel")
+-- Stroke and Corner
+local stroke = Instance.new("UIStroke", mainFrame)
+stroke.Color = Color3.fromRGB(0, 255, 255)
+stroke.Thickness = 2
+
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 6)
+
+-- Title
+local title = Instance.new("TextLabel", mainFrame)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-title.Text = "Freeze Trade Scam"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 18
-title.Parent = mainFrame
+title.BackgroundTransparency = 1
+title.Text = "☠ Hacker Panel ☠"
+title.Font = Enum.Font.Code
+title.TextSize = 16
+title.TextColor3 = Color3.fromRGB(0, 255, 255)
 
--- Toggle Button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 30, 0, 30)
-toggleButton.Position = UDim2.new(1, -35, 0, 0)
-toggleButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-toggleButton.Text = "-"
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 20
-toggleButton.Parent = mainFrame
+-- Freeze Button
+local freezeButton = Instance.new("TextButton", mainFrame)
+freezeButton.Size = UDim2.new(1, -20, 0, 30)
+freezeButton.Position = UDim2.new(0, 10, 0, 35)
+freezeButton.Text = "🧊 Freeze Trade"
+freezeButton.Font = Enum.Font.Code
+freezeButton.TextSize = 16
+freezeButton.TextColor3 = Color3.fromRGB(0, 255, 255)
+freezeButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Instance.new("UICorner", freezeButton).CornerRadius = UDim.new(0, 4)
 
--- Freeze Trade Button
-local freezeButton = Instance.new("TextButton")
-freezeButton.Size = UDim2.new(0.8, 0, 0, 40)
-freezeButton.Position = UDim2.new(0.1, 0, 0.25, 0)
-freezeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-freezeButton.Text = "Freeze Trade"
-freezeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-freezeButton.Font = Enum.Font.SourceSansBold
-freezeButton.TextSize = 20
-freezeButton.Parent = mainFrame
+-- Scroll Frame
+local scroll = Instance.new("ScrollingFrame", mainFrame)
+scroll.Size = UDim2.new(1, -20, 1, -75)
+scroll.Position = UDim2.new(0, 10, 0, 70)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+scroll.ScrollBarThickness = 3
+scroll.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+scroll.BorderSizePixel = 0
+Instance.new("UICorner", scroll).CornerRadius = UDim.new(0, 4)
 
--- Message Label
-local messageLabel = Instance.new("TextLabel")
-messageLabel.Size = UDim2.new(1, 0, 0, 25)
-messageLabel.Position = UDim2.new(0, 0, 0.48, 0)
-messageLabel.BackgroundTransparency = 1
-messageLabel.Text = ""
-messageLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-messageLabel.Font = Enum.Font.SourceSans
-messageLabel.TextSize = 16
-messageLabel.Parent = mainFrame
+local uiList = Instance.new("UIListLayout", scroll)
+uiList.Padding = UDim.new(0, 4)
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Input TextBox for Pet Name
-local petInput = Instance.new("TextBox")
-petInput.Size = UDim2.new(0.8, 0, 0, 35)
-petInput.Position = UDim2.new(0.1, 0, 0.65, 0)
-petInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-petInput.PlaceholderText = "Enter Pet Name"
-petInput.Text = ""
-petInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-petInput.Font = Enum.Font.SourceSans
-petInput.TextSize = 18
-petInput.ClearTextOnFocus = false
-petInput.Parent = mainFrame
+-- Function to add player row with icon
+local function addPlayerRow(player)
+	local row = Instance.new("Frame", scroll)
+	row.Size = UDim2.new(1, 0, 0, 32)
+	row.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	row.BorderSizePixel = 0
 
--- Add Fake Pet Button
-local addPetButton = Instance.new("TextButton")
-addPetButton.Size = UDim2.new(0.8, 0, 0, 35)
-addPetButton.Position = UDim2.new(0.1, 0, 0.85, 0)
-addPetButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-addPetButton.Text = "Add Fake Pet"
-addPetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-addPetButton.Font = Enum.Font.SourceSansBold
-addPetButton.TextSize = 18
-addPetButton.Parent = mainFrame
+	-- Player Icon
+	local thumb = Instance.new("ImageLabel", row)
+	thumb.Size = UDim2.new(0, 26, 0, 26)
+	thumb.Position = UDim2.new(0, 2, 0.5, -13)
+	thumb.BackgroundTransparency = 1
+	thumb.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=100&h=100"
 
--- Toggle logic
-local minimized = false
-toggleButton.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	if minimized then
-		mainFrame.Size = UDim2.new(0, 280, 0, 30)
-		toggleButton.Text = "+"
-		freezeButton.Visible = false
-		messageLabel.Visible = false
-		petInput.Visible = false
-		addPetButton.Visible = false
-	else
-		mainFrame.Size = UDim2.new(0, 280, 0, 200)
-		toggleButton.Text = "-"
-		freezeButton.Visible = true
-		messageLabel.Visible = true
-		petInput.Visible = true
+	-- Name
+	local nameLabel = Instance.new("TextLabel", row)
+	nameLabel.Size = UDim2.new(0.45, 0, 1, 0)
+	nameLabel.Position = UDim2.new(0, 32, 0, 0)
+	nameLabel.Text = player.Name
+	nameLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+	nameLabel.Font = Enum.Font.Code
+	nameLabel.TextSize = 14
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+	-- Toggle
+	local toggle = Instance.new("TextButton", row)
+	toggle.Size = UDim2.new(0.3, 0, 0.8, 0)
+	toggle.Position = UDim2.new(1, -65, 0.1, 0)
+	toggle.Text = "OFF"
+	toggle.Font = Enum.Font.Code
+	toggle.TextSize = 14
+	toggle.TextColor3 = Color3.fromRGB(0, 255, 255)
+	toggle.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 4)
+
+	toggle.MouseButton1Click:Connect(function()
+		if toggle.Text == "OFF" then
+			toggle.Text = "ON"
+			toggle.BackgroundColor3 = Color3.fromRGB(0, 60, 60)
+		else
+			toggle.Text = "OFF"
+			toggle.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+		end
+	end)
+
+	scroll.CanvasSize = UDim2.new(0, 0, 0, uiList.AbsoluteContentSize.Y + 10)
+end
+
+-- Add existing players
+for _, player in ipairs(Players:GetPlayers()) do
+	if player ~= LocalPlayer then
+		addPlayerRow(player)
+	end
+end
+
+-- Add new players
+Players.PlayerAdded:Connect(function(player)
+	addPlayerRow(player)
+end)
+
+-- Freeze button logic
+freezeButton.MouseButton1Click:Connect(function()
+	print("🧊 Freeze Trade clicked")
+end)		petInput.Visible = true
 		addPetButton.Visible = true
 	end
 end)
