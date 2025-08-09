@@ -1,75 +1,104 @@
--- 🌱 Grow a Garden: Set Mutation Button
--- LocalScript in StarterGui
+-- LocalScript inside StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
--- GUI Creation
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = PlayerGui
+-- Function to create the first GUI with loading
+local function createLoadingGui(messageText)
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = playerGui
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 200, 0, 80)
-MainFrame.Position = UDim2.new(0.4, 0, 0.4, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.Active = true
-MainFrame.Draggable = true
-MainFrame.Parent = ScreenGui
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.4, 0, 0.25, 0)
+    frame.Position = UDim2.new(0.3, 0, 0.4, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0.5, 0)
+    label.BackgroundTransparency = 1
+    label.Text = messageText
+    label.Font = Enum.Font.GothamBold
+    label.TextScaled = true
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Parent = frame
 
-local SetButton = Instance.new("TextButton")
-SetButton.Size = UDim2.new(0.8, 0, 0.5, 0)
-SetButton.Position = UDim2.new(0.1, 0, 0.25, 0)
-SetButton.Text = "Set Mutation"
-SetButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
-SetButton.TextColor3 = Color3.new(1, 1, 1)
-SetButton.Font = Enum.Font.SourceSansBold
-SetButton.TextScaled = true
-SetButton.Parent = MainFrame
+    -- Loading bar background
+    local barBg = Instance.new("Frame")
+    barBg.Size = UDim2.new(0.9, 0, 0.2, 0)
+    barBg.Position = UDim2.new(0.05, 0, 0.65, 0)
+    barBg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    barBg.BorderSizePixel = 0
+    barBg.Parent = frame
 
--- Track if rainbow applied
-local rainbowApplied = false
+    -- Loading bar fill
+    local barFill = Instance.new("Frame")
+    barFill.Size = UDim2.new(0, 0, 1, 0)
+    barFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    barFill.BorderSizePixel = 0
+    barFill.Parent = barBg
 
--- Function to rename once
-local function renameTool(tool)
-    if not string.find(tool.Name, "Rainbow") then
-        tool.Name = "Rainbow " .. tool.Name
-    end
-end
-
--- Rainbow Effect Handler
-local function applyRainbow(tool)
-    -- Prevent double application
-    if rainbowApplied then return end
-    rainbowApplied = true
-
-    renameTool(tool)
-
-    -- Continuous rainbow color cycle
-    RunService.RenderStepped:Connect(function()
-        if tool and tool.Parent then
-            for _, part in pairs(tool:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    local hue = tick() % 5 / 5
-                    part.Color = Color3.fromHSV(hue, 1, 1)
-                end
-            end
+    -- Fake loading animation
+    task.spawn(function()
+        for i = 1, 100 do
+            barFill.Size = UDim2.new(i / 100, 0, 1, 0)
+            task.wait(0.1) -- Adjust speed
         end
     end)
+
+    return screenGui
 end
 
--- Button Click
-SetButton.MouseButton1Click:Connect(function()
-    local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
-    if tool then
-        applyRainbow(tool)
-    else
-        warn("Equip a tool first!")
-    end
-end)
+-- Function to create the proceed GUI with close button
+local function createProceedGui(messageText)
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = playerGui
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.4, 0, 0.2, 0)
+    frame.Position = UDim2.new(0.3, 0, 0.4, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = messageText
+    label.Font = Enum.Font.GothamBold
+    label.TextScaled = true
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Parent = frame
+
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0.15, 0, 0.3, 0)
+    closeButton.Position = UDim2.new(0.85, 0, 0, 0)
+    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    closeButton.Text = "X"
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.TextScaled = true
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.Parent = frame
+
+    closeButton.MouseButton1Click:Connect(function()
+        screenGui:Destroy()
+    end)
+
+    return screenGui
+end
+
+-- Step 1: Show loading GUI
+local gui1 = createLoadingGui("Teleporting you on glitched server...")
+
+-- Step 2: Wait 10 seconds
+task.wait(10)
+
+-- Step 3: Destroy old GUI
+gui1:Destroy()
+
+-- Step 4: Show proceed GUI
+createProceedGui("You can proceed now")
